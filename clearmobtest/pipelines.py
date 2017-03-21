@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
 
-# Define your item pipelines here
+# Item pipelines here
 #
-# Don't forget to add your pipeline to the ITEM_PIPELINES setting
-# See: http://doc.scrapy.org/en/latest/topics/item-pipeline.html
+# add your pipeline to the ITEM_PIPELINES setting
+# 
 
 import csv
 from clearmobtest.items import Article
@@ -25,15 +25,16 @@ class ClearmobtestPipeline(object):
         'can process items here async'
         print item
 
-        clean_body = self.remove_non_ascii(str(item['body']).encode('utf-8'))
-        clean_article_url = self.remove_non_ascii(str(item['url']).encode('utf-8'))
+        clean_body = self.remove_non_ascii(str(item['body']).encode('utf-8')) # Remove unicode characters
+        clean_article_url = self.remove_non_ascii(str(item['url']).encode('utf-8')) 
         clean_title_with_html = self.remove_non_ascii(str(item['title']).encode('utf-8'))
-        clean_article_title = self.remove_html_tags(clean_title_with_html)
+        clean_article_title = self.remove_html_tags(clean_title_with_html) # cleans out html tags 
 
-        entities = self.extract_entities_from_articles(clean_body)
+        entities = self.extract_entities_from_articles(clean_body) # POS tagging + NLP 
         ###
-        self.data["company name"] = entities[1:8]
-        self.data["company website"] = self.find_urls(str(item['body']))
+        #Final dataframe to write to file
+        self.data["company name"] = entities[1:8] # taking only a portion of entire set
+        self.data["company website"] = self.find_urls(str(item['body'])) #finding for company website before cleaning using regex
 
         self.data["article url"] = clean_article_url
         self.data["article title"] = clean_article_title[1:-1]
@@ -50,7 +51,7 @@ class ClearmobtestPipeline(object):
         return item
 
     def extract_entities_from_articles(self, text):
-        chunks = ne_chunk(pos_tag(word_tokenize(text)))
+        chunks = ne_chunk(pos_tag(word_tokenize(text))) # ('HI', NN), ('AIRBNB', ZZ) ... 
         prev = None
         cur_chunk, cont_chunk = [], []
         for i in chunks:
