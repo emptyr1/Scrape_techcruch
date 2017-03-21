@@ -73,12 +73,18 @@ class ClearmobtestPipeline(object):
     def find_urls(self, text):
         urls = re.findall(r'href=[\'"]?([^\'" >]+)', text)
 
-        url_string = (', '.join([url for url in urls[:3] if not url.startswith("https://techcrunch") or
-                                 not url.startswith("https://crunchbase") or
-                                 not url.startswith("https://blog")
-                                ]))
+        url_string = (', '.join([url for url in urls[:3] if self.blacklist_urls(url)]))
 
         return url_string if url_string else "n/a"
+
+
+    def blacklist_urls(self, url_text):
+        if (url_text.startswith("https://tech") or
+            url_text.startswith("https://crunchbase") or
+            url_text.startswith("https://blog") or url_text.startswith("https://money")):
+            return False
+        else:
+            return True
 
 
     def remove_non_ascii(self, text):
