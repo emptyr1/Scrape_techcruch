@@ -1,4 +1,4 @@
-Clearmob : Practice assignment
+Clearmob:
 
 This script scrapes all articles from techcruch[dot]com, read each article and determine which company (if any) is the primary subject matter of the article.
 
